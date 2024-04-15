@@ -22,7 +22,8 @@
                     <tbody>
                         <tr>
                             <th>Sea level</th>
-                            <td>{{ sea_level }}</td>
+                            <td v-if="sea_level > 0">{{ sea_level }}</td>
+                            <td v-else>Null</td>
                         </tr>
                         <tr>
                             <th>Humidity</th>
@@ -39,19 +40,19 @@
                 
                 <div id="div_form" class="d-flex m-3 justify-content-center">
                     <form action="">
-                        <input type="button" value="Change Location" class="btn change-btn btn-primary">
+                        <input type="button" value="Change Location" @click="changeLocation" class="btn change_btn btn-primary">
                     </form>
                 </div>
             </div>
         </div>
     </div>
 </template>
-  
-  <script>
-  import axios from 'axios';
-  import DaysWeather from './DaysWeather.vue'
 
-  export default (await import('vue')).defineComponent({
+<script>
+import axios from 'axios';
+import DaysWeather from './DaysWeather.vue'
+
+export default (await import('vue')).defineComponent({
         name: 'myWeather',
         components:{
             DaysWeather,
@@ -75,6 +76,12 @@
                 monthNames: ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre","Noviembre", "Diciembre"],
             }
         },
+        methods:{
+            changeLocation(){
+                window.location.reload();
+            }
+             
+        },
         async created() {
             const response = await axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${this.city}&units=metric&appid=f358c81e83557f952d0a885eeacfbc3e`)
             const weatherData = response.data;
@@ -94,28 +101,28 @@
             console.log(weatherData);
         }
     })
-  
-  
-  
-  </script>
-  
-  <style>
-  body{
-    background-color: #343d4b;
-  }
 
-  .weather-temp {
+
+
+</script>
+
+<style>
+body{
+    background-color: #343d4b;
+}
+
+.weather-temp {
     margin: 0;
     font-weight: 700;
     font-size: 4em;
-  }
+}
 
-  h2.mb-1.day{
+h2.mb-1.day{
     font-size: 3rem;
     font-weight: 400;
-  }
+}
 
-  .main-div{
+.main-div{
     border-radius: 20px;
     color: #fff;
     background-image: url('../assets/fototiempo.jpg'); 
@@ -141,7 +148,7 @@
     background-color: #212730;
     border-radius: 20px;
 }
- 
+
 
 .card-details {
     margin-left: 19px;
@@ -201,8 +208,7 @@ tr:hover{
     transform: scale(0.9);
     transition: transform 0.1s ease;
 }
-  
-  
-  
+
+
+
 </style>
-  
