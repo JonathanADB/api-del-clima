@@ -41,7 +41,7 @@
                      const forecastData = Response.data.list;
                      const filteredData = forecastData.map(item => {
                         return {
-                            date : moment(item.dt_text.split(' ')[0]),
+                            date : moment(item.dt_txt.split(' ')[0]),
                             temperature: Math.round(item.main.temp),
                             description: item.weather[0].description,
                             iconUrl: `https://api.openweathermap.org/img/w/${item.weather[0].icon}.png` 

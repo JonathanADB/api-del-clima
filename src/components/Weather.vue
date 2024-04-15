@@ -21,16 +21,16 @@
                 <table class="m-4">
                     <tbody>
                         <tr>
-                            <th>Sea level</th>
+                            <th>Nivel del mar</th>
                             <td v-if="sea_level > 0">{{ sea_level }}</td>
-                            <td v-else>Null</td>
+                            <td v-else>No tiene playa jajaja</td>
                         </tr>
                         <tr>
-                            <th>Humidity</th>
+                            <th>Humedad</th>
                             <td>{{ humidity }}</td>
                         </tr>
                         <tr>
-                            <th>Wind</th>
+                            <th>Viento</th>
                             <td>{{ wind }}</td>
                         </tr>
                     </tbody>
@@ -74,37 +74,40 @@ export default (await import('vue')).defineComponent({
                 humidity: null,
                 country: null,
                 monthNames: ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre","Noviembre", "Diciembre"],
+                errorMessage: null
             }
         },
         methods:{
             changeLocation(){
                 window.location.reload();
+            },
+            async fetchData() {
+                try {
+                    const response = await axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${this.city}&units=metric&appid=f358c81e83557f952d0a885eeacfbc3e`);
+                    const weatherData = response.data;
+                    this.temperature = Math.round(weatherData.main.temp);
+                    this.description = weatherData.weather[0].description;
+                    this.name = weatherData.name;
+                    this.wind = weatherData.wind.speed;
+                    this.sea_level = weatherData.main.sea_level;
+                    this.country = weatherData.sys.country;
+                    this.humidity = weatherData.main.humidity;
+                    this.iconUrl =`https://api.openweathermap.org/img/w/${weatherData.weather[0].icon}.png`;
+                    const d = new Date();
+                    this.date = d.getDate() + '-' + this.monthNames[d.getMonth()]+ '-' + d.getFullYear();
+                    this.time = d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds();
+                } catch (error) {
+                    console.error('Error fetching weather data: ', error);
+                    this.errorMessage = 'Error fetching weather data. Please try again later.';
+                }
             }
-             
         },
         async created() {
-            const response = await axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${this.city}&units=metric&appid=f358c81e83557f952d0a885eeacfbc3e`)
-            const weatherData = response.data;
-            this.temperature = Math.round(weatherData.main.temp)
-            this.description = weatherData.weather[0].description;
-            this.name = weatherData.name;
-            this.wind = weatherData.wind.speed;
-            this.sea_level = weatherData.main.sea_level;
-            this.country = weatherData.sys.country;
-            this.humidity = weatherData.main.humidity;
-            
-            
-            this.iconUrl =`https://api.openweathermap.org/img/w/${weatherData.weather[0].icon}.png`;
-            const d = new Date();
-            this.date = d.getDate() + '-' + this.monthNames[d.getMonth()]+ '-' + d.getFullYear();
-            this.time = d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds();
-            console.log(weatherData);
+            await this.fetchData();
         }
     })
-
-
-
 </script>
+
 
 <style>
 body{
